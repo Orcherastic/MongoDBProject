@@ -1,0 +1,190 @@
+﻿@page
+@model PROJEKAT_MONGODB.Pages.AdminModel
+@{
+}
+<section class="w3l-content-with-photo-11">
+    <div class="contentwithphoto-11 py-5">
+        <div class="container py-md-3">
+            <div style="margin-bottom:10px;" class="tabelaRez-info">
+                <div class="tab">
+                    <button class="tablinks" onclick="openTable(event, 'Rezervacije')">Rezervacije</button>
+                    <button class="tablinks" onclick="openTable(event, 'Kruzeri')">Kruzeri</button>
+                    <button class="tablinks" onclick="openTable(event, 'Korisnici')">Korisnici</button>
+                </div>
+
+                <div id="Rezervacije" class="tabcontent">
+                    <form method="post" class="rez-tabela">
+                        <h4 class="predstojece-rez">Rezervacije</h4>
+                        @if (Model.rezervacije.Count == 0)
+                        {
+                            <label class="nema-rez">Ne postoje rezervacije!</label>
+                        }
+                        else
+                        {
+                            <div style="overflow-y:scroll; height:500px;">
+                                <table id="offers1" class="table" style="width:95%;">
+                                    <thead>
+                                        <tr>
+                                            <th>Ime Korisnika</th>
+                                            <th>Prezime Korisnika</th>
+                                            <th>Broj Telefona Korisnika</th>
+                                            <th>Datum Rezervacije</th>
+                                            <th>Kruzer</th>
+                                            <th>Kontakt Telefon Kruzera</th>
+                                            <th>Ime Menadzera</th>
+                                            <th>Email Menadzera</th>
+                                            <th>Broj Telefona Menadzera</th>
+                                            <th>Ponuda</th>
+                                            <th>Cena U Evrima</th>
+                                            <th>Status</th>
+                                            <th></th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @for (int i = 0; i < @Model.rezervacije.Count; i++)
+                                        {
+                                            <tr>
+                                                <td>@Model.rezervacije.ElementAt(i).ImeKorisnika</td>
+                                                <td>@Model.rezervacije.ElementAt(i).PrezimeKorisnika</td>
+                                                <td>@Model.rezervacije.ElementAt(i).BrojTelefonaKorisnika</td>
+                                                <td>@Model.rezervacije.ElementAt(i).DatumKreiranja.ToString("dd.MM.yyyy.")</td>
+                                                <td><a asp-page="/KruzerSingle" asp-route-id="@Model.kruzeriRezervacija.ElementAt(i).Id">@Model.kruzeriRezervacija.ElementAt(i).Naziv</a></td>
+                                                <td>@Model.kruzeriRezervacija.ElementAt(i).KontaktTelefon</td>
+                                                <td>@Model.menadzeriRezervacija.ElementAt(i).Ime @Model.menadzeriRezervacija.ElementAt(i).Prezime</td>
+                                                <td>@Model.menadzeriRezervacija.ElementAt(i).Email</td>
+                                                <td>@Model.menadzeriRezervacija.ElementAt(i).BrojTelefona</td>
+                                                <td>@Model.ponudeRezervacija.ElementAt(i).Pocetak.ToString("dd.MM.yyyy.") - @Model.ponudeRezervacija.ElementAt(i).Kraj.ToString("dd.MM.yyyy.")</td>
+                                                <td>@Model.ponudeRezervacija.ElementAt(i).Cena</td>
+                                                <td>@Model.rezervacije.ElementAt(i).Status</td>
+                                                <td><button class="otkaziRez" asp-route-id="@Model.rezervacije.ElementAt(i).Id" asp-page-handler="ObrisiRez" onclick="return confirm('Da li ste sigurni da zelite da obrisete ovu rezervaciju?');">Obrisi</button></td>
+                                                @if (Model.rezervacije.ElementAt(i).Status == "Na cekanju!")
+                                                {
+                                                    <td><button class="otkaziRez" asp-route-id="@Model.rezervacije.ElementAt(i).Id" asp-page-handler="StatusAktivno" onclick="return confirm('Da li ste sigurni da zelite da promenite status na Aktivno?');">Aktivno</button></td>
+}
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                    </form>
+                </div>
+
+                <div id="Kruzeri" class="tabcontent">
+                    <form method="post" class="rez-tabela">
+                        <h4 class="predstojece-rez">Kruzeri koji imaju rezervacije</h4>
+                        @*@if (Model.kruzeri.Count == 0)
+                        {
+                            <label class="nema-rez">Ne postoje kruzeri!</label>
+                        }
+                        else
+                        {*@
+                            <div style="overflow-y:scroll; height:500px;">
+                                <table id="offers1" class="table" style="width:95%;">
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                            <th>Naziv</th>
+                                            <th>Kontakt Telefon Kruzera</th>
+                                            <th>Ime menadzera</th>
+                                            <th>Email Menadzera</th>
+                                            <th>Kontakt Telefon Menadzera</th>
+                                            <th>Drzave</th>
+                                            <th>Gradovi</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @for (int i = 0; i < @Model.ponudeRezervacija.Count; i++)
+                                        {
+                                           
+                                        <tr>
+                                            <td><a asp-page="/KruzerSingle" asp-route-id="@Model.kruzeri.ElementAt(i).Id"><img src="@Model.kruzeri.ElementAt(i).GlavnaSlika" style="width:150px; height:90px;"></a></td>
+                                            <td>@Model.kruzeri.ElementAt(i).Naziv</td>
+                                            <td>@Model.kruzeriRezervacija.ElementAt(i).KontaktTelefon</td>
+                                            
+                                            <td>@Model.menadzeri.ElementAt(i).Ime @Model.menadzeri.ElementAt(i).Prezime</td>
+                                            <td>@Model.menadzeri.ElementAt(i).Email</td>
+                                            <td>@Model.menadzeri.ElementAt(i).BrojTelefona</td>
+                                            
+                                            <td>
+                                                @foreach (var d1 in Model.kruzeri.ElementAt(i).Drzave)
+                                                {
+
+                                                    @d1.Naziv<bold> </bold>
+                                                } 
+                                                </td>
+                
+                                            <td> @foreach (var g1 in Model.kruzeri.ElementAt(i).Gradovi)
+                                            {
+                                                 <bold> </bold>    @g1.Naziv 
+                                            }</td>
+                
+                                            <td><button class="otkaziRez" asp-route-id="@Model.kruzeri.ElementAt(i).Id" asp-page-handler="ObrisiKruzer" onclick="return confirm('Da li ste sigurni da zelite da obrisete ovaj kruzer?(Brise se i korisnik ciji je ovo kruzer)');">Obrisi</button></td>
+                                        </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        
+                    </form>
+                </div>
+
+                <div id="Korisnici" class="tabcontent">
+                    <form method="post" class="rez-tabela">
+                        <h4 class="predstojece-rez">Korisnici</h4>
+                        @*@if (Model.korisnici.Count == 0)
+                        {
+                            <label class="nema-rez">Ne postoje korisnici!</label>
+                        }
+                        else
+                        {*@
+                            <div style="overflow-y:scroll; height:500px;">
+                                <table id="offers" class="table" style="width:95%;">
+                                    <thead>
+                                        <tr>
+                                            <th>Ime i Prezime</th>
+                                            <th>Email</th>
+                                            <th>Broj Telefona</th>
+                                            @*<th>Kontakt Telefon</th>*@
+                                            
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @for (int i = 0; i < @Model.menadzeri.Count; i++)
+                                        {
+                                            <tr>
+                                                <td>@Model.menadzeri.ElementAt(i).Ime @Model.menadzeri.ElementAt(i).Prezime</td>
+                                           
+                                                <td>@Model.menadzeri.ElementAt(i).Email</td>
+                                                <td>@Model.menadzeri.ElementAt(i).BrojTelefona</td>
+                                               
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    function openTable(evt, cityName) {
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+        tablinks = document.getElementsByClassName("tablinks");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+        document.getElementById(cityName).style.display = "block";
+        evt.currentTarget.className += " active";
+    }
+</script>

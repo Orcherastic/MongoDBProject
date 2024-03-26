@@ -1,0 +1,167 @@
+﻿@page
+@model PROJEKAT_MONGODB.Pages.ProfilModel
+@{
+}
+<section class="w3l-content-with-photo-11">
+    <div class="contentwithphoto-11 py-5">
+        <div class="container py-md-3">
+            <div style="margin-bottom:10px;" class="tabelaRez-info">
+                <div class="tab">
+                    <button class="tablinks" onclick="openTable(event, 'Rezervacije')">Rezervacije</button>
+                    <button class="tablinks" onclick="openTable(event, 'Ponude')">Ponude</button>
+                    <button class="tablinks" onclick="openTable(event, 'Kabine')">Kabine</button>
+                </div>
+
+                <div id="Rezervacije" class="tabcontent">
+                    <h4 class="predstojece-rez">Rezervacije</h4>
+                    <div>
+                        <select id="kabinaOznaka">
+                            <option value="0">Kabina</option>
+                            @for (int i = 0; i < @Model.kabine.Count; i++)
+                            {
+                                <option value="@Model.kabine.ElementAt(i).BrojKabine">@Model.kabine.ElementAt(i).BrojKabine (@Model.kabine.ElementAt(i).BrojMesta)</option>
+                            }
+                        </select>
+                        <button type="submit" onclick="vratiRez()">Proveri rezervaciju</button>
+                        <div style="overflow-y:scroll; height:500px; margin-top:20px;">
+                            <table id="offers1" class="table" style="width:95%;">
+                                <thead>
+                                    <tr>
+                                        <th>Datum rezervacije</th>
+                                        <th>Status</th>
+                                        <th>Datum pocetka rezervacije</th>
+                                        <th>Datum kraja rezervacije</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="kabina">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="Ponude" class="tabcontent">
+                    <h4 class="predstojece-rez">Ponude</h4>
+                    <button><a asp-page="/AddPonuda" asp-route-kruzerId=@Model.kruzer.Id.ToString()> Dodaj ponudu</a></button>
+                    @if (Model.ponude.Count == 0)
+                    {
+                        <label class="nema-rez">Ponude ne postoje!</label>
+                    }
+                    else
+                    {
+                        <div style="overflow-y:scroll; height:500px;">
+                            <table id="offers1" class="table" style="width:95%;">
+                                <thead>
+                                    <tr>
+                                        <th>Datum pocetka ponude</th>
+                                        <th>Datum kraja ponude</th>
+                                        <th>Cena u evrima</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var a in @Model.ponude)
+                                    {
+                                        <tr>
+                                            <td>@a.Pocetak.ToString("dd.MM.yyyy.")</td>
+                                            <td>@a.Kraj.ToString("dd.MM.yyyy.")</td>
+                                            <td>@a.Cena</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+
+                <div id="Kabine" class="tabcontent">
+                    <h4 class="predstojece-rez">Kabine</h4>
+                    @if (Model.kabine.Count == 0)
+                    {
+                        <label class="nema-rez">Ne postoje kabine!</label>
+                    }
+                    else
+                    {
+                        <div style="overflow-y:scroll; height:500px;">
+                            <table id="offers1" class="table" style="width:95%;">
+                                <thead>
+                                    <tr>
+                                        <th>Naziv kabine</th>
+                                        <th>Broj kreveta</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var s in @Model.kabine)
+                                    {
+                                        <tr>
+                                            <td>@s.BrojKabine</td>
+                                            <td>@s.BrojMesta</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    function openTable(evt, cityName) {
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+        tablinks = document.getElementsByClassName("tablinks");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+        document.getElementById(cityName).style.display = "block";
+        evt.currentTarget.className += " active";
+    }
+</script>
+
+<script>
+    function vratiRez() {
+        var kabina = document.getElementById('kabinaOznaka').value;
+        console.log(1);
+        console.log(kabina)
+
+        $.ajax({
+            type: "GET",
+            url: '/Profil?handler=Kabina',
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("XSRF-TOKEN",
+                    $('input:hidden[name="__RequestVerificationToken"]').val());
+            },
+            data: { oznaka: kabina },
+            success: function (response) {
+                $("#kabina").empty();
+                if (response.length != 0) {
+                    var body = document.getElementById('kabina');
+                    for (var i = 0; i < response.datum.length; i++) {
+                        var red = document.createElement("tr");
+                        body.appendChild(red);
+                        var celija1 = document.createElement("td");
+                        celija1.innerHTML = response.datum[i];
+                        red.appendChild(celija1);
+                        var celija2 = document.createElement("td");
+                        celija2.innerHTML = response.status[i];
+                        red.appendChild(celija2);
+                        var celija3 = document.createElement("td");
+                        celija3.innerHTML = response.pocetak[i];
+                        red.appendChild(celija3);
+                        var celija4 = document.createElement("td");
+                        celija4.innerHTML = response.kraj[i];
+                        red.appendChild(celija4);
+                    }
+                }
+            }
+        })
+    }
+</script>
+<script src="https://code.jquery.com/jquery-2.2.4.min.js"
+        integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+        crossorigin="anonymous"></script>

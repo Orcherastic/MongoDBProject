@@ -1,0 +1,37 @@
+﻿@page
+@model PROJEKAT_MONGODB.Pages.LoginModel
+@{
+}
+<section class="w3l-login">
+    <div class="login-bg section-gap">
+        <div class="container">
+            <!---728x90--->
+
+
+            <div class="login-form">
+                <h4 class="form-head">Dobrodosli, molimo Vas prijavite se</h4>
+                <form method="post">
+                    <div class="">
+                        <p class="text-head">Email</p>
+                        <input type="text" required="" asp-for="email" placeholder="Please Enter Email.." class="input" />
+                    </div>
+                    <div class="">
+                        <p class="text-head">Sifra</p>
+                        <input type="password" required="" asp-for="sifra" placeholder="Please Enter Password.." class="input" />
+
+                    </div>
+                    <span class="error">@Model.ErrorMessage</span>
+                    
+                    <div class="d-grid align-login-register">
+                        <button type="submit" class="btn btn-theme4"style="background-color:darkturquoise" asp-page-handler="Login">Prijavi se</button>
+                        <a asp-page="/Register" class="signuplink" style="display:contents">Nemate nalog? Kreirajte nalog</a>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+        <!---728x90--->
+
+    </div>
+
+</section>
